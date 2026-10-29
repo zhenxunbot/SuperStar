@@ -15,7 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    # 单次任务最长运行 350 分钟（5小时50分）
+    # 单次任务最长运行 350 分钟（5小时50分），到点自动强退
     timeout-minutes: 350
 
     steps:
@@ -25,15 +25,17 @@ jobs:
       - name: 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          # 将原 Python 3.9 升级为 3.10 以避免兼容性报错
           python-version: '3.10' 
 
       - name: 安装依赖包
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          # 补上缺失的 httpx 库
+          pip install httpx
 
       - name: 导入配置
+        # 将你在 Secrets 中配置的 CONFIG 写入到 config.ini 文件中
         run: |
           echo "${{ secrets.CONFIG }}" > config.ini
 

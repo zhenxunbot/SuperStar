@@ -1,21 +1,15 @@
 name: SuperStar Auto Study
 
 on:
-  # 手动触发按钮
+  # 保留了手动触发按钮，去掉了所有定时任务（schedule）
+  # 只有你在 Actions 页面手动点击 Run workflow 时才会运行
   workflow_dispatch:
-  
-  # 定时触发（GitHub 使用 UTC 时间，比北京时间慢 8 小时）
-  schedule:
-    # 北京时间 08:00 触发（UTC 00:00）
-    - cron: '0 0 * * *'
-    # 北京时间 14:00 触发（UTC 06:00）
-    - cron: '0 6 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    # 单次任务最长运行 350 分钟（5小时50分），到点自动强退
+    # 单次任务最长运行 350 分钟（5小时50分），防止跑太久
     timeout-minutes: 350
 
     steps:
@@ -31,11 +25,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # 补上缺失的 httpx 库
           pip install httpx
 
       - name: 导入配置
-        # 将你在 Secrets 中配置的 CONFIG 写入到 config.ini 文件中
         run: |
           echo "${{ secrets.CONFIG }}" > config.ini
 
